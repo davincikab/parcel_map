@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Parcel Map</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiZGF1ZGk5NyIsImEiOiJjanJtY3B1bjYwZ3F2NGFvOXZ1a29iMmp6In0.9ZdvuGInodgDk7cv-KlujA';
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/daudi97/ckzgnxxy9002514s7wnhtpb02',
+        center: {lng: 36.293312884607815, lat: -0.23828738001957106},
+        zoom: 15,
+        pitch:45,
+        bearing:-68.79999999999973
+    });
+    const popup = new mapboxgl.Popup();
+    map.addControl(new mapboxgl.NavigationControl());
+
+    map.on('load', function(e) {
+        map.on('click', function(e) {
+            let features = map.queryRenderedFeatures(e.point, {layers:['parcel-layer-dhe1s2']});
+            console.log(features);
+
+            if(features[0]) {
+                let [feature, ...feat] = features;
+                let area = (feature.properties.area) /10000;
+                area = area.toFixed(2)
+
+                popup
+                    .setLngLat(e.lngLat)
+                    .setHTML(`<div>
+                        <b>Parcel No. </b>
+                        ${features[0].properties.PARCEL_NUM}
+                        <div>
+                            <b>Area. </b>
+                            ${area} Ha
+                        </div>
+                    </div>`
+                    )
+                    .addTo(map)
+            }
+        });
+
+
+        map.on('mouseover', 'parcel-layer-dhe1s2', function(e) {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'parcel-layer-dhe1s2', function(e) {
+            map.getCanvas().style.cursor = '';
+        })
+    });
+
+    
+</script>
+
+</body>
+</html>
